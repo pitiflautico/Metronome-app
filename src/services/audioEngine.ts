@@ -31,6 +31,10 @@ class AudioEngine {
   }
 
   private async loadSounds(): Promise<void> {
+    // NOTE: Sound files are placeholders. Replace files in assets/sounds/ with real MP3s.
+    // Uncomment below when you have real sound files:
+
+    /*
     const soundFiles: Record<SoundType, any> = {
       click: require('../../assets/sounds/click.mp3'),
       ping: require('../../assets/sounds/ping.mp3'),
@@ -47,6 +51,9 @@ class AudioEngine {
         console.error(`Error loading sound ${type}:`, error);
       }
     }
+    */
+
+    console.log('⚠️ Sound files not loaded. Add real MP3 files to assets/sounds/ and uncomment loadSounds() in audioEngine.ts');
   }
 
   configure(config: MetronomeConfig): void {
@@ -107,7 +114,10 @@ class AudioEngine {
     if (!this.config) return;
 
     const sound = this.sounds.get(this.config.soundType);
-    if (!sound) return;
+    if (!sound) {
+      // No sound loaded - using haptic feedback only
+      return;
+    }
 
     try {
       await sound.setPositionAsync(0);
