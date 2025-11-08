@@ -16,8 +16,7 @@ import { BeatIndicator } from '../../components/BeatIndicator';
 import { IconButton } from '../../components/IconButton';
 import { RootStackParamList, TimeSignature, SoundType, SoundModifications } from '../../types';
 import { audioEngine } from '../../services/audioEngine';
-import { adsManager, BannerAdSize } from '../../services/adsManager';
-import { BannerAd } from 'react-native-google-mobile-ads';
+import { adsManager } from '../../services/adsManager';
 import Svg, { Path } from 'react-native-svg';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
@@ -245,13 +244,14 @@ export const HomeScreen: React.FC = () => {
         </View>
       </ScrollView>
 
-      {/* Banner Ad */}
-      <View style={styles.adContainer}>
-        <BannerAd
-          unitId={adsManager.getBannerAdUnitId()}
-          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-        />
-      </View>
+      {/* Banner Ad Placeholder - Requires native build */}
+      {__DEV__ && (
+        <View style={[styles.adContainer, { backgroundColor: colors.border, padding: 10 }]}>
+          <Text style={[{ color: colors.textSecondary, fontSize: 10, textAlign: 'center' }]}>
+            Ad Space (Requires EAS Build)
+          </Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 };

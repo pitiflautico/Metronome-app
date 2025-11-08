@@ -1,76 +1,32 @@
-import {
-  BannerAd,
-  BannerAdSize,
-  InterstitialAd,
-  RewardedAd,
-  AdEventType,
-  TestIds,
-} from 'react-native-google-mobile-ads';
-import { Platform } from 'react-native';
-
-// Test IDs for development
-const BANNER_AD_UNIT_ID = __DEV__
-  ? TestIds.BANNER
-  : Platform.OS === 'ios'
-  ? 'ca-app-pub-xxxxxxxxxxxxx/xxxxxxxxxxxxx'
-  : 'ca-app-pub-xxxxxxxxxxxxx/xxxxxxxxxxxxx';
-
-const INTERSTITIAL_AD_UNIT_ID = __DEV__
-  ? TestIds.INTERSTITIAL
-  : Platform.OS === 'ios'
-  ? 'ca-app-pub-xxxxxxxxxxxxx/xxxxxxxxxxxxx'
-  : 'ca-app-pub-xxxxxxxxxxxxx/xxxxxxxxxxxxx';
-
-const REWARDED_AD_UNIT_ID = __DEV__
-  ? TestIds.REWARDED
-  : Platform.OS === 'ios'
-  ? 'ca-app-pub-xxxxxxxxxxxxx/xxxxxxxxxxxxx'
-  : 'ca-app-pub-xxxxxxxxxxxxx/xxxxxxxxxxxxx';
+/**
+ * Ads Manager
+ *
+ * Note: AdMob functionality requires a native build and cannot run in Expo Go.
+ * This is a placeholder implementation for development.
+ *
+ * To enable ads in production:
+ * 1. Install: npm install react-native-google-mobile-ads
+ * 2. Add plugin to app.json
+ * 3. Build with EAS: eas build
+ * 4. Replace this file with the full implementation
+ */
 
 class AdsManager {
-  private interstitialAd: InterstitialAd | null = null;
-  private rewardedAd: RewardedAd | null = null;
   private playCount: number = 0;
   private readonly INTERSTITIAL_FREQUENCY = 5;
 
   constructor() {
-    this.initializeInterstitial();
-    this.initializeRewarded();
+    console.log('📢 Ads Manager initialized (development mode - no ads)');
   }
 
   // Banner
   getBannerAdUnitId(): string {
-    return BANNER_AD_UNIT_ID;
+    return 'ca-app-pub-3940256099942544/6300978111'; // Test ID
   }
 
   // Interstitial
-  private initializeInterstitial(): void {
-    this.interstitialAd = InterstitialAd.createForAdRequest(INTERSTITIAL_AD_UNIT_ID);
-    this.interstitialAd.addAdEventListener(AdEventType.LOADED, () => {
-      console.log('Interstitial ad loaded');
-    });
-    this.interstitialAd.addAdEventListener(AdEventType.CLOSED, () => {
-      console.log('Interstitial ad closed');
-      this.interstitialAd?.load();
-    });
-    this.interstitialAd.load();
-  }
-
   async showInterstitial(): Promise<void> {
-    if (!this.interstitialAd) {
-      this.initializeInterstitial();
-      return;
-    }
-
-    try {
-      if (this.interstitialAd.loaded) {
-        await this.interstitialAd.show();
-      } else {
-        console.log('Interstitial ad not ready');
-      }
-    } catch (error) {
-      console.error('Error showing interstitial ad:', error);
-    }
+    console.log('📢 [Dev Mode] Interstitial ad would show here');
   }
 
   incrementPlayCount(): void {
@@ -81,60 +37,29 @@ class AdsManager {
   }
 
   // Rewarded
-  private initializeRewarded(): void {
-    this.rewardedAd = RewardedAd.createForAdRequest(REWARDED_AD_UNIT_ID);
-    this.rewardedAd.addAdEventListener(AdEventType.LOADED, () => {
-      console.log('Rewarded ad loaded');
-    });
-    this.rewardedAd.addAdEventListener(AdEventType.CLOSED, () => {
-      console.log('Rewarded ad closed');
-      this.rewardedAd?.load();
-    });
-    this.rewardedAd.load();
-  }
-
   async showRewarded(onReward: () => void): Promise<boolean> {
-    if (!this.rewardedAd) {
-      this.initializeRewarded();
-      return false;
+    console.log('📢 [Dev Mode] Rewarded ad would show here');
+    // In development, simulate reward
+    if (__DEV__) {
+      onReward();
+      return true;
     }
-
-    try {
-      if (this.rewardedAd.loaded) {
-        let rewarded = false;
-
-        const unsubscribeEarned = this.rewardedAd.addAdEventListener(
-          AdEventType.EARNED_REWARD,
-          () => {
-            rewarded = true;
-            onReward();
-          }
-        );
-
-        const unsubscribeClosed = this.rewardedAd.addAdEventListener(
-          AdEventType.CLOSED,
-          () => {
-            unsubscribeEarned();
-            unsubscribeClosed();
-          }
-        );
-
-        await this.rewardedAd.show();
-        return rewarded;
-      } else {
-        console.log('Rewarded ad not ready');
-        return false;
-      }
-    } catch (error) {
-      console.error('Error showing rewarded ad:', error);
-      return false;
-    }
+    return false;
   }
 
   isRewardedAdReady(): boolean {
-    return this.rewardedAd?.loaded ?? false;
+    return __DEV__; // Always ready in dev mode
   }
 }
 
 export const adsManager = new AdsManager();
-export { BannerAdSize };
+
+// Mock BannerAdSize for development
+export const BannerAdSize = {
+  BANNER: 'BANNER',
+  LARGE_BANNER: 'LARGE_BANNER',
+  MEDIUM_RECTANGLE: 'MEDIUM_RECTANGLE',
+  FULL_BANNER: 'FULL_BANNER',
+  LEADERBOARD: 'LEADERBOARD',
+  ANCHORED_ADAPTIVE_BANNER: 'ANCHORED_ADAPTIVE_BANNER',
+};
