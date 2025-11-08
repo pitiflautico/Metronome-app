@@ -1,6 +1,7 @@
 import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
 import { MetronomeConfig, SoundType } from '../types';
+import { generateBeepWav, soundConfigs } from '../utils/generateSound';
 
 class AudioEngine {
   private sounds: Map<SoundType, Audio.Sound> = new Map();
@@ -22,38 +23,30 @@ class AudioEngine {
         shouldDuckAndroid: true,
       });
 
-      // Load all sound files
-      await this.loadSounds();
+      // Generate synthetic sounds
+      await this.loadSyntheticSounds();
       this.isInitialized = true;
+      console.log('✅ Metronome initialized with synthetic sounds');
     } catch (error) {
       console.error('Error initializing audio:', error);
+      this.isInitialized = true; // Continue without sounds (haptics only)
     }
   }
 
-  private async loadSounds(): Promise<void> {
-    // NOTE: Sound files are placeholders. Replace files in assets/sounds/ with real MP3s.
-    // Uncomment below when you have real sound files:
-
-    /*
-    const soundFiles: Record<SoundType, any> = {
-      click: require('../../assets/sounds/click.mp3'),
-      ping: require('../../assets/sounds/ping.mp3'),
-      stick: require('../../assets/sounds/stick.mp3'),
-      wooden: require('../../assets/sounds/wooden.mp3'),
-      drum: require('../../assets/sounds/drum.mp3'),
-    };
-
-    for (const [type, file] of Object.entries(soundFiles)) {
+  private async loadSyntheticSounds(): Promise<void> {
+    // Generate synthetic sounds for each type
+    for (const [type, config] of Object.entries(soundConfigs)) {
       try {
-        const { sound } = await Audio.Sound.createAsync(file);
+        const wavData = generateBeepWav(config.frequency, config.duration);
+        const { sound } = await Audio.Sound.createAsync(
+          { uri: wavData },
+          { shouldPlay: false }
+        );
         this.sounds.set(type as SoundType, sound);
       } catch (error) {
-        console.error(`Error loading sound ${type}:`, error);
+        console.error(`Error creating sound ${type}:`, error);
       }
     }
-    */
-
-    console.log('⚠️ Sound files not loaded. Add real MP3 files to assets/sounds/ and uncomment loadSounds() in audioEngine.ts');
   }
 
   configure(config: MetronomeConfig): void {
@@ -94,11 +87,13 @@ class AudioEngine {
     // Play sound
     await this.playSound(isAccent);
 
-    // Vibrate on accent beats
-    if (isAccent && this.vibrationEnabled) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    } else if (this.vibrationEnabled) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // Vibrate on beats
+    if (this.vibrationEnabled) {
+      if (isAccent) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      } else {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
     }
 
     // Call beat callback
@@ -139,7 +134,7 @@ class AudioEngine {
 
       await sound.playAsync();
     } catch (error) {
-      console.error('Error playing sound:', error);
+      // Silent fail - continue with haptics only
     }
   }
 
@@ -153,7 +148,11 @@ class AudioEngine {
 
   async playPreview(soundType: SoundType): Promise<void> {
     const sound = this.sounds.get(soundType);
-    if (!sound) return;
+    if (!sound) {
+      // Provide haptic feedback as preview
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      return;
+    }
 
     try {
       await sound.setPositionAsync(0);
@@ -161,7 +160,7 @@ class AudioEngine {
       await sound.setRateAsync(1.0, true);
       await sound.playAsync();
     } catch (error) {
-      console.error('Error playing preview:', error);
+      console.log('Preview not available');
     }
   }
 
