@@ -4,6 +4,7 @@ import {
   InterstitialAd,
   RewardedAd,
   AdEventType,
+  RewardedAdEventType,
   TestIds,
 } from 'react-native-google-mobile-ads';
 import { Platform } from 'react-native';
@@ -79,7 +80,7 @@ class AdsManager {
 
   private initializeRewarded(): void {
     this.rewardedAd = RewardedAd.createForAdRequest(REWARDED_AD_UNIT_ID);
-    this.rewardedAd.addAdEventListener(AdEventType.LOADED, () => {
+    this.rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => {
       console.log('Rewarded ad loaded');
     });
     this.rewardedAd.addAdEventListener(AdEventType.CLOSED, () => {
@@ -100,7 +101,7 @@ class AdsManager {
         let rewarded = false;
 
         const unsubscribeEarned = this.rewardedAd.addAdEventListener(
-          AdEventType.EARNED_REWARD,
+          RewardedAdEventType.EARNED_REWARD,
           () => {
             rewarded = true;
             onReward();

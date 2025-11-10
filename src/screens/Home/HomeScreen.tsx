@@ -103,17 +103,6 @@ export const HomeScreen: React.FC = () => {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={styles.header}>
-        <IconButton onPress={handlePresetsPress} size={40}>
-          <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
-            <Path
-              d="M3 6h18M3 12h18M3 18h18"
-              stroke={colors.text}
-              strokeWidth={2}
-              strokeLinecap="round"
-            />
-          </Svg>
-        </IconButton>
-
         <View style={styles.logoContainer}>
           <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
             <Path
@@ -126,16 +115,18 @@ export const HomeScreen: React.FC = () => {
           <Text style={[styles.logoText, { color: colors.text }]}>METROPULSE</Text>
         </View>
 
-        <IconButton onPress={handleSettingsPress} size={40}>
-          <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
-            <Path
-              d="M4 6h16M4 12h16M4 18h16"
-              stroke={colors.text}
-              strokeWidth={2}
-              strokeLinecap="round"
-            />
-          </Svg>
-        </IconButton>
+        <View style={styles.settingsButton}>
+          <IconButton onPress={handleSettingsPress} size={40}>
+            <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+              <Path
+                d="M4 6h16M4 12h16M4 18h16"
+                stroke={colors.text}
+                strokeWidth={2}
+                strokeLinecap="round"
+              />
+            </Svg>
+          </IconButton>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -263,14 +254,22 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingHorizontal: 20,
     paddingVertical: 12,
+    position: 'relative',
   },
   logoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    position: 'absolute',
+    left: '50%',
+    transform: [{ translateX: -60 }],
+  },
+  settingsButton: {
+    position: 'absolute',
+    right: 20,
   },
   logoText: {
     fontSize: 12,

@@ -21,6 +21,8 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.metronomebeats.app",
+      "buildNumber": "1",
+      "appleTeamId": "6BS7LV4JR8",
       "infoPlist": {
         "UIBackgroundModes": [
           "audio"
